@@ -23,6 +23,8 @@ body{background:radial-gradient(circle at 50% 0,rgba(230,28,36,.18),transparent 
 .sb::-webkit-scrollbar-thumb:active{background:#FF002B}
 @supports not selector(::-webkit-scrollbar){.sb{scrollbar-width:auto;scrollbar-color:#E61C24 #1a1a1a}}
 main{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+@keyframes ssz{from{transform:scale(1)}to{transform:scale(1.06)}}
+.ss-zoom{animation:ssz 9s ease-in-out infinite alternate}
 .card{content-visibility:auto;contain-intrinsic-size:auto 320px;contain:layout paint}
 .card img{transition:transform .4s;will-change:auto}
 .card:active img{transform:scale(1.04)}
@@ -183,6 +185,16 @@ button{touch-action:manipulation}
       <div id="receipt-summary" class="w-full bg-neutral-900/60 border border-neutral-800 rounded-xl p-3 text-left text-xs space-y-1.5 max-h-36 overflow-y-auto sb"></div>
     </div>
     <button data-act="finish" class="w-full max-w-sm py-4 bg-brand-red active:bg-brand-redNeon font-impact text-2xl rounded-xl shadow-lg">NOUVELLE COMMANDE</button>
+  </div>
+  <!-- ÉCONOMISEUR D'ÉCRAN -->
+  <div id="screensaver" class="hidden opacity-0 absolute inset-0 z-[60] bg-black cursor-pointer overflow-hidden" style="transition:opacity .5s">
+    <div id="ss-slides" class="absolute inset-0"></div>
+    <div class="absolute top-0 inset-x-0 pt-5 text-center bg-gradient-to-b from-black/90 to-transparent pb-8">
+      <h2 class="text-4xl sm:text-5xl font-impact italic tracking-wider text-glow">LE <span class="text-brand-red">RAZE</span></h2>
+    </div>
+    <div class="absolute bottom-0 inset-x-0 pb-6 pt-12 text-center bg-gradient-to-t from-black via-black/80 to-transparent">
+      <p class="font-impact text-3xl sm:text-4xl tracking-wider text-brand-yellow animate-pulse">TOUCHEZ POUR COMMANDER ➔</p>
+    </div>
   </div>
 </div>
 
@@ -441,6 +453,40 @@ document.addEventListener('click',e=>{
  else if(d.qty)changeQty(d.key,+d.qty);
  else if(d.act)actions[d.act]?.();
 });
+
+// ---------- ÉCONOMISEUR D'ÉCRAN ----------
+const IDLE_MS=60000,SLIDE_MS=4500,SAVER_KEYS=['menu-gims','menu-yanns'];
+const ss=$('screensaver');
+$('ss-slides').innerHTML=SAVER_KEYS.map((k,i)=>{const s=STARS[k];return `
+ <div class="ss-slide absolute inset-0 flex items-center justify-center ${i?'opacity-0':''}" style="transition:opacity 1s">
+  <img src="${s.img}" alt="${s.name}" class="ss-zoom h-[72%] max-w-[92%] object-contain rounded-2xl border-4 ${s.border} shadow-2xl">
+  <div class="absolute inset-x-0 bottom-28 text-center"><span class="inline-block bg-black/80 ${s.text} font-impact text-2xl sm:text-3xl px-5 py-1.5 rounded-xl border ${s.border}">${s.name.toUpperCase()} • ${fmt(s.price)}</span></div>
+ </div>`}).join('');
+const ssSlides=[...document.querySelectorAll('.ss-slide')];
+let idleT=0,slideT=0,ssIdx=0,saverOn=false;
+function armIdle(){clearTimeout(idleT);idleT=setTimeout(showSaver,IDLE_MS)}
+function showSaver(){
+ if(saverOn)return;saverOn=true;ssIdx=0;
+ ssSlides.forEach((el,i)=>el.classList.toggle('opacity-0',i!==0));
+ ss.classList.remove('hidden');
+ requestAnimationFrame(()=>requestAnimationFrame(()=>ss.classList.remove('opacity-0')));
+ slideT=setInterval(()=>{
+  ssSlides[ssIdx].classList.add('opacity-0');
+  ssIdx=(ssIdx+1)%ssSlides.length;
+  ssSlides[ssIdx].classList.remove('opacity-0');
+ },SLIDE_MS);
+}
+function hideSaver(){
+ if(!saverOn)return;saverOn=false;clearInterval(slideT);
+ ss.classList.add('opacity-0');
+ setTimeout(()=>{if(!saverOn)ss.classList.add('hidden')},500);
+ // nouvelle session : on repart d'un écran propre
+ resetOrder();['star-modal','cart-modal','confirmation-screen'].forEach(id=>show(id,false));
+ showSplash();armIdle();
+}
+ss.addEventListener('click',hideSaver);
+['pointerdown','keydown','scroll'].forEach(ev=>document.addEventListener(ev,()=>{if(!saverOn)armIdle()},{passive:true,capture:true}));
+armIdle();
 
 setPayment('CB');updateCart();
 })();
