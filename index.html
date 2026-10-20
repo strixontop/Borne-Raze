@@ -202,8 +202,10 @@ const STARS={
   mains:['Gims Black Burger (Bun Noir, Steak Angus, Cheddar Fondant)','Gims Golden Chicken Wrap (Poulet Doré, Sauce Magique)','Gims Tacos Monster Double Viande']},
  'menu-strix':{name:'Menu Strix',price:16.90,badge:'LE GOÛT DU CHAOS',border:'border-brand-red',text:'text-brand-red',btn:'bg-brand-red text-white',img:'images/strix.webp',w:711,h:459,toy:'3 Pizzas au choix + Frites + Boisson',desc:'Pizza au choix + frites + boisson. Pas de règles, juste du goût !',tag:'Pizza Chaos',
   mains:['Pizza Strix (Sauce tomate, mozzarella, pepperoni, jalapeños)','Pizza Strix Spéciale','Pizza 4 Fromages','Pizza Reine','Strix Inferno Burger (Steak, Sauce Piquante Chaos)']},
- 'menu-blocus':{name:'Menu Blocus',price:15.90,badge:'BEST-SELLER STREET',border:'border-emerald-400',text:'text-emerald-400',btn:'bg-emerald-400 text-black',img:'images/blocus.webp',w:585,h:582,toy:'Burger + Frites + Boisson',desc:'Le menu Raze : un burger, des frites et une boisson au choix.',tag:'Street Burger Double',
-  mains:['Raze Burger (Steak haché, cheddar, salade, tomate, sauce maison)','Raze Crispy (Poulet croustillant, cheddar, salade)','Raze Wrap (Poulet, crudités, cheddar, sauce Raze)','Raze Tacos (Poulet, fromage, frites et sauce fromagère)']}
+ 'menu-blocus':{name:'Menu Blocus',price:15.90,badge:'MENU CLASSIQUE',classic:true,border:'border-emerald-400',text:'text-emerald-400',btn:'bg-emerald-400 text-black',img:'images/blocus.webp',w:585,h:582,toy:'',desc:'Le menu Raze : un burger, des frites et une boisson au choix.',tag:'Street Burger Double',
+  mains:['Raze Burger (Steak haché, cheddar, salade, tomate, sauce maison)','Raze Crispy (Poulet croustillant, cheddar, salade)','Raze Wrap (Poulet, crudités, cheddar, sauce Raze)','Raze Tacos (Poulet, fromage, frites et sauce fromagère)']},
+ 'menu-max':{name:'Menu Max',price:16.90,badge:'NOUVEAUTÉ • COLLAB MAX',border:'border-orange-400',text:'text-orange-400',btn:'bg-orange-400 text-black',img:'images/max.webp',w:900,h:507,pos:'object-[38%_50%]',toy:'Jouet Bon Toutou',desc:'Le Max Burger, des frites, une boisson Pipi et le jouet Bon Toutou !',tag:'Jouet Bon Toutou',
+  mains:['Le Max Burger'],drinks:['Boisson Pipi']}
 };
 const u=(id,w=400)=>`https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=70`;
 const PRODUCTS=[
@@ -217,19 +219,20 @@ const PRODUCTS=[
  {n:'Coca-Cola 33cl',c:'boissons',p:2.50,d:'Cannette fraîche 33cl.',i:'photo-1622483767028-3f66f32aef97'},
  {n:'Cookie Géant Nutella',c:'desserts',p:3.50,d:'Cookie au cœur fondant Nutella et pépites de chocolat.',i:'photo-1499636136210-6f4ee915583e'}
 ];
-const CATS=[['all','TOUT LE MENU'],['stars','★ MENUS STARS'],['pizzas','PIZZAS'],['burgers','BURGERS'],['accompagnements','SIDES'],['boissons','BOISSONS'],['desserts','DESSERTS']];
+const CATS=[['all','TOUT LE MENU'],['stars','★ MENUS STARS'],['menus','MENUS'],['pizzas','PIZZAS'],['burgers','BURGERS'],['accompagnements','SIDES'],['boissons','BOISSONS'],['desserts','DESSERTS']];
 
 // ---------- ÉTAT ----------
 const cart=new Map();
 let orderType='Sur Place',payment='CB',activeStar=null,cat='all';
 
 // ---------- RENDU INITIAL (une seule fois) ----------
-const starKeys=Object.keys(STARS);
+const allKeys=Object.keys(STARS);
+const starKeys=allKeys.filter(k=>!STARS[k].classic),classicKeys=allKeys.filter(k=>STARS[k].classic);
 
 const sm=$('splash-menus'),sd=$('splash-dots');
 sm.innerHTML=starKeys.map(k=>{const s=STARS[k];return `
  <div data-star="${k}" data-start="1" class="snap-center shrink-0 w-[82%] sm:w-[30%] bg-neutral-900 border-2 ${s.border} rounded-2xl p-2 flex flex-col items-center active:scale-95 transition-transform cursor-pointer">
-  <img src="${s.img}" alt="${s.name}" width="${s.w}" height="${s.h}" class="w-full h-44 object-cover object-top rounded-xl" decoding="async">
+  <img src="${s.img}" alt="${s.name}" width="${s.w}" height="${s.h}" class="w-full h-44 object-cover ${s.pos||'object-top'} rounded-xl" decoding="async">
   <span class="text-xl font-impact ${s.text} mt-2 uppercase leading-none">${s.name} • ${fmt(s.price)}</span>
   <span class="text-[11px] text-neutral-400 mt-0.5">${s.tag}</span>
  </div>`}).join('');
@@ -246,7 +249,7 @@ $('cats').innerHTML=CATS.map(([k,l])=>`<button data-cat="${k}" class="cat-btn px
 const slider=$('slider'),dots=$('slider-dots');
 slider.innerHTML=starKeys.map(k=>{const s=STARS[k];return `
  <article class="snap-center shrink-0 w-[82%] sm:w-[48%] relative h-80 rounded-2xl border-2 ${s.border} overflow-hidden bg-black shadow-xl">
-  <img src="${s.img}" alt="${s.name}" width="${s.w}" height="${s.h}" decoding="async" class="absolute inset-0 w-full h-full object-cover object-top">
+  <img src="${s.img}" alt="${s.name}" width="${s.w}" height="${s.h}" decoding="async" class="absolute inset-0 w-full h-full object-cover ${s.pos||'object-top'}">
   <span class="absolute top-2 left-2 ${s.btn} text-[10px] font-impact px-2.5 py-0.5 rounded shadow-lg uppercase tracking-wider">${s.badge}</span>
   <div class="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black via-black/85 to-transparent pt-12">
    <div class="flex items-end justify-between gap-2">
@@ -266,6 +269,21 @@ function updateDots(){
 let raf=0;slider.addEventListener('scroll',()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(updateDots)},{passive:true});
 updateDots();
 
+const classicCards=classicKeys.map(k=>{const s=STARS[k];return `
+ <article data-c="menus" class="card bg-brand-card rounded-2xl border border-neutral-800 overflow-hidden flex flex-col shadow-lg">
+  <div class="relative h-40 bg-black overflow-hidden">
+   <img src="${s.img}" alt="${s.name}" width="${s.w}" height="${s.h}" loading="lazy" decoding="async" class="w-full h-full object-cover object-top">
+   <div class="absolute bottom-2 right-2 bg-brand-red px-3 py-1 font-impact text-xl rounded-lg shadow-md rotate-1">${fmt(s.price)}</div>
+  </div>
+  <div class="p-3 sm:p-4 flex-1 flex flex-col justify-between">
+   <div><h3 class="font-impact text-xl tracking-wide leading-tight">${s.name}</h3><p class="text-xs text-neutral-400 mt-1 line-clamp-2">${s.desc}</p></div>
+   <div class="mt-4 pt-2 border-t border-neutral-800 flex items-center justify-between">
+    <span class="text-[10px] font-bold text-neutral-500 uppercase">MENU CLASSIQUE</span>
+    <button data-star="${k}" class="px-3 py-1.5 bg-brand-red text-white text-xs font-impact tracking-wider rounded-lg active:scale-95">COMPOSER ➔</button>
+   </div>
+  </div>
+ </article>`}).join('');
+
 const productCards=PRODUCTS.map((p,i)=>`
  <article data-c="${p.c}" class="card bg-brand-card rounded-2xl border border-neutral-800 overflow-hidden flex flex-col shadow-lg">
   <div class="relative h-40 bg-neutral-900 overflow-hidden">
@@ -281,7 +299,7 @@ const productCards=PRODUCTS.map((p,i)=>`
   </div>
  </article>`).join('');
 
-$('products-grid').innerHTML=productCards;
+$('products-grid').innerHTML=classicCards+productCards;
 const cards=[...$('products-grid').children];
 const hero=$('star-section');
 
@@ -332,9 +350,12 @@ function openStar(k){
  $('modal-star-title').textContent=s.name.toUpperCase();
  $('modal-star-subtitle').textContent=s.badge;
  const img=$('modal-star-img');img.src=s.img;img.alt=s.name;
- $('modal-star-badge').textContent='INCLUS : '+s.toy;
+ const bd=$('modal-star-badge');bd.textContent='INCLUS : '+s.toy;bd.classList.toggle('hidden',!s.toy);
  $('modal-star-toy-desc').textContent='';
  $('star-select-main').innerHTML=s.mains.map(m=>`<option>${esc(m)}</option>`).join('');
+ const dr=$('star-select-drink');
+ if(!dr.dataset.def)dr.dataset.def=dr.innerHTML;
+ dr.innerHTML=s.drinks?s.drinks.map(d=>`<option>${esc(d)}</option>`).join(''):dr.dataset.def;
  const b=$('star-modal-confirm-btn');
  b.textContent=`VALIDER ${s.name.toUpperCase()} • ${fmt(s.price)}`;
  b.className=`w-full py-3 ${s.btn} font-impact text-xl rounded-xl shadow-lg active:scale-95`;
@@ -344,7 +365,7 @@ function confirmStar(){
  if(!activeStar)return;
  const sideSel=$('star-select-side');
  const extra=sideSel.selectedOptions[0].dataset.extra?1:0;
- const details=[$('star-select-main').value,sideSel.value,$('star-select-drink').value,'Inclus: '+activeStar.toy].join(' | ');
+ const details=[$('star-select-main').value,sideSel.value,$('star-select-drink').value,activeStar.toy&&'Inclus: '+activeStar.toy].filter(Boolean).join(' | ');
  addToCart(activeStar.name,activeStar.price+extra,details);
  show('star-modal',false);
 }
