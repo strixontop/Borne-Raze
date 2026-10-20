@@ -16,6 +16,12 @@ tailwind.config={theme:{extend:{colors:{brand:{red:'#E61C24',redNeon:'#FF002B',d
 <style>
 body{background:radial-gradient(circle at 50% 0,rgba(230,28,36,.18),transparent 60%),#080808;color:#fff;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+.sb{overflow-anchor:none}
+.sb::-webkit-scrollbar{width:16px;height:14px}
+.sb::-webkit-scrollbar-track{background:#1a1a1a;border-radius:8px}
+.sb::-webkit-scrollbar-thumb{background:#E61C24;border-radius:8px;border:3px solid #1a1a1a;min-height:48px;min-width:48px}
+.sb::-webkit-scrollbar-thumb:active{background:#FF002B}
+@supports not selector(::-webkit-scrollbar){.sb{scrollbar-width:auto;scrollbar-color:#E61C24 #1a1a1a}}
 main{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .card{content-visibility:auto;contain-intrinsic-size:auto 320px;contain:layout paint}
 .card img{transition:transform .4s;will-change:auto}
@@ -42,8 +48,9 @@ button{touch-action:manipulation}
       <h1 class="text-6xl sm:text-8xl font-impact tracking-wider italic -rotate-1 text-glow">LE <span class="text-brand-red">RAZE</span></h1>
       <p class="font-impact text-2xl tracking-widest text-neutral-300 uppercase -mt-1">RESTAURANT &amp; MENUS EXCLUSIFS</p>
 
-      <div id="splash-menus" class="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full max-w-2xl my-4"></div>
-      <p class="text-xs text-neutral-400 font-semibold">Toucher n'importe où pour ouvrir le menu complet</p>
+      <div id="splash-menus" class="flex gap-3 overflow-x-auto snap-x snap-mandatory sb w-full max-w-2xl my-4 px-[9%] sm:px-1" style="scroll-padding:0 9%"></div>
+      <div id="splash-dots" class="flex justify-center gap-2 -mt-1 mb-2"></div>
+      <p class="text-xs text-neutral-400 font-semibold">Glisse pour voir les menus • Touche un menu pour le choisir</p>
     </div>
 
     <button data-act="start" class="w-full py-4 bg-brand-red active:bg-brand-redNeon text-white font-impact text-2xl rounded-xl shadow-lg">COMMENCER LA COMMANDE</button>
@@ -65,12 +72,12 @@ button{touch-action:manipulation}
   </header>
 
   <!-- CATEGORIES -->
-  <nav id="cats" class="bg-neutral-900 border-b border-neutral-800 px-2 sm:px-4 py-2 shrink-0 flex gap-2 overflow-x-auto no-scrollbar z-10"></nav>
+  <nav id="cats" class="bg-neutral-900 border-b border-neutral-800 px-2 sm:px-4 py-2 shrink-0 flex gap-2 overflow-x-auto sb z-10"></nav>
 
   <!-- MAIN -->
-  <main class="flex-1 overflow-y-auto p-3 sm:p-4 bg-neutral-950 no-scrollbar">
+  <main class="flex-1 overflow-y-auto p-3 sm:p-4 bg-neutral-950 sb">
     <section id="star-section" class="mb-5 relative">
-      <div id="slider" class="flex gap-3 overflow-x-auto snap-x snap-mandatory no-scrollbar scroll-smooth pb-1"></div>
+      <div id="slider" class="flex gap-3 overflow-x-auto snap-x snap-mandatory sb scroll-smooth pb-1"></div>
       <button data-slide="-1" aria-label="Précédent" class="hidden sm:flex absolute left-1 top-1/2 -translate-y-1/2 w-10 h-10 items-center justify-center rounded-full bg-black/70 border border-neutral-600 text-xl">‹</button>
       <button data-slide="1" aria-label="Suivant" class="hidden sm:flex absolute right-1 top-1/2 -translate-y-1/2 w-10 h-10 items-center justify-center rounded-full bg-black/70 border border-neutral-600 text-xl">›</button>
       <div id="slider-dots" class="flex justify-center gap-2 mt-2"></div>
@@ -107,7 +114,7 @@ button{touch-action:manipulation}
         <button data-act="close-star" class="text-neutral-400 text-2xl font-bold px-2">✕</button>
       </div>
 
-      <div class="overflow-y-auto no-scrollbar space-y-3 my-3 pr-1">
+      <div class="overflow-y-auto sb space-y-3 my-3 pr-1">
         <div class="relative rounded-xl overflow-hidden border border-neutral-700 bg-black h-44">
           <img id="modal-star-img" src="" alt="" class="w-full h-full object-contain">
         </div>
@@ -145,7 +152,7 @@ button{touch-action:manipulation}
         <h3 class="text-2xl font-impact">VOTRE <span class="text-brand-red">PANIER</span></h3>
         <button data-act="close-cart" class="text-neutral-400 text-2xl font-bold px-2">✕</button>
       </div>
-      <div id="cart-items-list" class="my-4 overflow-y-auto max-h-[38vh] space-y-2 no-scrollbar pr-1"></div>
+      <div id="cart-items-list" class="my-4 overflow-y-auto max-h-[38vh] space-y-2 sb pr-1"></div>
       <div class="border-t border-neutral-800 pt-3 space-y-1">
         <div class="flex justify-between text-xs text-neutral-400"><span>Mode de consommation</span><span id="modal-order-type" class="font-bold text-white">Sur Place</span></div>
         <div class="flex justify-between items-center pt-2"><span class="font-impact text-xl">TOTAL À PAYER</span><span id="modal-total-price" class="font-impact text-3xl text-brand-yellow">0,00 €</span></div>
@@ -173,7 +180,7 @@ button{touch-action:manipulation}
         <span id="order-number" class="text-6xl font-impact text-brand-yellow tracking-wider my-2 block">#58</span>
         <span id="ticket-order-type" class="text-xs bg-brand-red font-bold px-3 py-1 rounded-full uppercase"></span>
       </div>
-      <div id="receipt-summary" class="w-full bg-neutral-900/60 border border-neutral-800 rounded-xl p-3 text-left text-xs space-y-1.5 max-h-36 overflow-y-auto no-scrollbar"></div>
+      <div id="receipt-summary" class="w-full bg-neutral-900/60 border border-neutral-800 rounded-xl p-3 text-left text-xs space-y-1.5 max-h-36 overflow-y-auto sb"></div>
     </div>
     <button data-act="finish" class="w-full max-w-sm py-4 bg-brand-red active:bg-brand-redNeon font-impact text-2xl rounded-xl shadow-lg">NOUVELLE COMMANDE</button>
   </div>
@@ -195,7 +202,7 @@ const STARS={
   mains:['Gims Black Burger (Bun Noir, Steak Angus, Cheddar Fondant)','Gims Golden Chicken Wrap (Poulet Doré, Sauce Magique)','Gims Tacos Monster Double Viande']},
  'menu-strix':{name:'Menu Strix',price:16.90,badge:'LE GOÛT DU CHAOS',border:'border-brand-red',text:'text-brand-red',btn:'bg-brand-red text-white',img:'images/strix.webp',w:711,h:459,toy:'3 Pizzas au choix + Frites + Boisson',desc:'Pizza au choix + frites + boisson. Pas de règles, juste du goût !',tag:'Pizza Chaos',
   mains:['Pizza Strix (Sauce tomate, mozzarella, pepperoni, jalapeños)','Pizza Strix Spéciale','Pizza 4 Fromages','Pizza Reine','Strix Inferno Burger (Steak, Sauce Piquante Chaos)']},
- 'menu-blocus':{name:'Menu Blocus',price:15.90,badge:'BEST-SELLER STREET',border:'border-emerald-400',text:'text-emerald-400',btn:'bg-emerald-400 text-black',img:'images/blocus.jpg',w:585,h:582,toy:'Burger + Frites + Boisson',desc:'Le menu Raze : un burger, des frites et une boisson au choix.',tag:'Street Burger Double',
+ 'menu-blocus':{name:'Menu Blocus',price:15.90,badge:'BEST-SELLER STREET',border:'border-emerald-400',text:'text-emerald-400',btn:'bg-emerald-400 text-black',img:'images/blocus.webp',w:585,h:582,toy:'Burger + Frites + Boisson',desc:'Le menu Raze : un burger, des frites et une boisson au choix.',tag:'Street Burger Double',
   mains:['Raze Burger (Steak haché, cheddar, salade, tomate, sauce maison)','Raze Crispy (Poulet croustillant, cheddar, salade)','Raze Wrap (Poulet, crudités, cheddar, sauce Raze)','Raze Tacos (Poulet, fromage, frites et sauce fromagère)']}
 };
 const u=(id,w=400)=>`https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=70`;
@@ -219,12 +226,20 @@ let orderType='Sur Place',payment='CB',activeStar=null,cat='all';
 // ---------- RENDU INITIAL (une seule fois) ----------
 const starKeys=Object.keys(STARS);
 
-$('splash-menus').innerHTML=starKeys.map(k=>{const s=STARS[k];return `
- <div data-star="${k}" data-start="1" class="bg-neutral-900 border ${s.border} rounded-xl p-2 flex flex-col items-center active:scale-95 transition-transform cursor-pointer">
-  <img src="${s.img}" alt="${s.name}" width="${s.w}" height="${s.h}" class="w-full h-20 object-cover object-top rounded-lg" decoding="async">
-  <span class="text-[11px] font-impact ${s.text} mt-1.5 uppercase">${s.name}</span>
-  <span class="text-[9px] text-neutral-400">${s.tag}</span>
+const sm=$('splash-menus'),sd=$('splash-dots');
+sm.innerHTML=starKeys.map(k=>{const s=STARS[k];return `
+ <div data-star="${k}" data-start="1" class="snap-center shrink-0 w-[82%] sm:w-[30%] bg-neutral-900 border-2 ${s.border} rounded-2xl p-2 flex flex-col items-center active:scale-95 transition-transform cursor-pointer">
+  <img src="${s.img}" alt="${s.name}" width="${s.w}" height="${s.h}" class="w-full h-44 object-cover object-top rounded-xl" decoding="async">
+  <span class="text-xl font-impact ${s.text} mt-2 uppercase leading-none">${s.name} • ${fmt(s.price)}</span>
+  <span class="text-[11px] text-neutral-400 mt-0.5">${s.tag}</span>
  </div>`}).join('');
+sd.innerHTML=starKeys.map(()=>'<span class="h-2 w-2 rounded-full bg-neutral-600 transition-all"></span>').join('');
+function updateSplashDots(){
+ const i=Math.round(sm.scrollLeft/(sm.firstElementChild.offsetWidth+12));
+ [...sd.children].forEach((d,n)=>{d.classList.toggle('bg-brand-yellow',n===i);d.classList.toggle('w-5',n===i);d.classList.toggle('bg-neutral-600',n!==i)});
+}
+let sraf=0;sm.addEventListener('scroll',()=>{cancelAnimationFrame(sraf);sraf=requestAnimationFrame(updateSplashDots)},{passive:true});
+updateSplashDots();
 
 $('cats').innerHTML=CATS.map(([k,l])=>`<button data-cat="${k}" class="cat-btn px-4 py-2 rounded-lg font-impact tracking-wider text-lg shrink-0 ${k==='all'?'bg-brand-red text-white':'bg-neutral-800 text-neutral-300'}">${l}</button>`).join('');
 
